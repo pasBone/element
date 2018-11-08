@@ -1,4 +1,9 @@
 <style>
+.el-upload-list__item{
+    transition: unset;
+    display: block;
+    float: left;
+  }
   .upload-tip {
     color: #8492a6;
     font-size: 12px;
@@ -112,6 +117,25 @@
       },
       beforeRemove(file, fileList) {
         return this.$confirm(`确定移除 ${ file.name }？`);
+      },
+      initSort(){
+        this.$nextTick(_ => {
+          let $uplaod = $(".el-upload-list");
+          $uplaod.DDSort({
+            target: "li",
+            floatStyle: {
+              border: "1px solid #ccc",
+              "background-color": "#fff"
+            },
+            up: element => {
+              let { start, end } = element;
+              this.$refs['pictureWall'].moveIndex(start, end);
+            }
+          });
+        });
+      },
+      changeIndex(){
+        this.$refs['pictureWall'].moveIndex(1, 2);
       }
     }
   }
@@ -241,13 +265,16 @@
 
 :::demo
 ```html
-<el-upload
+<el-upload  ref="pictureWall"
+  :multiple="true"
   action="https://jsonplaceholder.typicode.com/posts/"
   list-type="picture-card"
   :on-preview="handlePictureCardPreview"
   :on-remove="handleRemove">
   <i class="el-icon-plus"></i>
 </el-upload>
+<el-button @click="changeIndex">change</el-button>
+<el-button @click="initSort">init</el-button>
 <el-dialog :visible.sync="dialogVisible">
   <img width="100%" :src="dialogImageUrl" alt="">
 </el-dialog>
